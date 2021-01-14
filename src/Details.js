@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import pet from "@frontendmasters/pet";
+import Carousel from "./Carousel";
+import ErrorBoundary from "./ErrorBoundary";
+import ThemeContext from "./ThemeContext";
 
 const Details = ({ id }) => {
   const [detail, setDetail] = useState({
@@ -11,6 +14,7 @@ const Details = ({ id }) => {
     breed: "",
     loading: false,
   });
+  const [theme] = useContext(ThemeContext);
   useEffect(() => {
     pet.animal(id).then(({ animal }) => {
       setDetail({
@@ -31,11 +35,12 @@ const Details = ({ id }) => {
         <h1>loading</h1>
       ) : (
         <div className="details">
+          <Carousel media={media} />
           <div>
             <h1>{name}</h1>
             <h2>{`${animal} - ${breed} - ${location}`}</h2>
+            <button style={{ backgroundColor: theme }}>Adopt {name}</button>
             <p>{description}</p>
-            <img src={media} alt={media} />
           </div>
         </div>
       )}
@@ -43,4 +48,10 @@ const Details = ({ id }) => {
   );
 };
 
-export default Details;
+export default function DetailsWithErrorBoundary(props) {
+  return (
+    <ErrorBoundary>
+      <Details {...props} />
+    </ErrorBoundary>
+  );
+}
