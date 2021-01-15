@@ -22,6 +22,8 @@ const Details = ({ id }) => {
 
   const [theme] = useContext(ThemeContext);
 
+  console.log(theme + "banan ");
+
   const adopt = () => {
     navigate(detail.url);
   };
