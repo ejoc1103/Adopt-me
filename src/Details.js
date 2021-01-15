@@ -1,10 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import pet from "@frontendmasters/pet";
+import { navigate } from "@reach/router";
+import Modal from "./Modal";
 import Carousel from "./Carousel";
 import ErrorBoundary from "./ErrorBoundary";
 import ThemeContext from "./ThemeContext";
 
 const Details = ({ id }) => {
+  const [showModal, setShowModal] = useState(false);
   const [detail, setDetail] = useState({
     name: "",
     animal: "",
@@ -12,9 +15,21 @@ const Details = ({ id }) => {
     description: "",
     media: "",
     breed: "",
+    url: "",
     loading: false,
+    showModal,
   });
+
   const [theme] = useContext(ThemeContext);
+
+  const adopt = () => {
+    navigate(detail.url);
+  };
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
+  };
+
   useEffect(() => {
     pet.animal(id).then(({ animal }) => {
       setDetail({
@@ -24,11 +39,13 @@ const Details = ({ id }) => {
         description: animal.description,
         media: animal.photos,
         breed: animal.breeds.primary,
+        url: animal.url,
         loading: false,
       });
     }, console.error);
   }, [id]);
   const { name, animal, location, description, media, breed, loading } = detail;
+
   return (
     <>
       {loading ? (
@@ -39,8 +56,19 @@ const Details = ({ id }) => {
           <div>
             <h1>{name}</h1>
             <h2>{`${animal} - ${breed} - ${location}`}</h2>
-            <button style={{ backgroundColor: theme }}>Adopt {name}</button>
+            <button onClick={toggleModal} style={{ backgroundColor: theme }}>
+              Adopt {name}
+            </button>
             <p>{description}</p>
+            {showModal ? (
+              <Modal>
+                <h1>Would you like to adopt {name}?</h1>
+                <div className="buttons">
+                  <button onClick={adopt}>Yes</button>
+                  <button onClick={toggleModal}>Not today, Sorry.</button>
+                </div>
+              </Modal>
+            ) : null}
           </div>
         </div>
       )}
